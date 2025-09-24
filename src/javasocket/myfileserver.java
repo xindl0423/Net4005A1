@@ -3,6 +3,8 @@ package javasocket;
 import java.net.*;
 import java.io.*;
 import java.uti.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class myfileserver extend Thread{
     private ServerSocket serverSocket;
@@ -10,11 +12,13 @@ public class myfileserver extend Thread{
     public static final int PORT = 1000;
     int  totalrequests = 0;
     int successfulrequests = 0;
-    int MAX_THREADS = 10;
+    final int MAX_THREADS = 10;
+    private ExecutorService threadPool;
 
     public myfileserver() throws IOException {
         try {
             serverSocket = new ServerSocket(PORT);
+            threadPool = Executors.newFixedThreadPool(MAX_THREADS);
             acceptconnections();
         } catch (IOException e) {
             e.printStackTrace();
@@ -25,7 +29,7 @@ public class myfileserver extend Thread{
         while (true){
             Socket clientsocket = serverSocket.accept();
             if(clientsocket.isconnected())
-                new Thread.( () ->{
+                threadPool.submit(() ->{
                     clientconnection client = new clientconnection(clientsocket);
                     client.sendFile();
                 } ).start();

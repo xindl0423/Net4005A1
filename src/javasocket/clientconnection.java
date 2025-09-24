@@ -41,7 +41,7 @@ public class clientconnection {
         out.writeUTF(fileContnet);
     }
 
-    private int getSelectedFileIndex() {
+    private int getSelectedFileIndex() throws IOException {
         String input = in.readUTF();
         return Integer.parseInt(input)-1;
     }
