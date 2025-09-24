@@ -2,11 +2,11 @@ package javasocket;
 
 import java.net.*;
 import java.io.*;
-import java.uti.concurrent.*;
+import java.util.concurrent.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class myfileserver extend Thread{
+public class myfileserver {
     private ServerSocket serverSocket;
     public static final String FILES_PATH = "./ServerFiles";
     public static final int PORT = 1000;
