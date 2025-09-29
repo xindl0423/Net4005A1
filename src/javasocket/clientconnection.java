@@ -1,11 +1,9 @@
 package javasocket;
 
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
+import java.util.List;
 
 public class clientconnection {
     private Socket socket;
@@ -14,46 +12,73 @@ public class clientconnection {
     private static final int PORT = 1000;
     private static final String STOP_STRING = "##";
 
-    public myfileserver(){
+    public clientconnection(Socket socket){
+        this.socket = socket;
         try{
             in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-            out = new DataInputStream(socket.getOutputStream());
+            out =new DataOutputStream(socket.getOutputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void sendFile() {
-        try{
-        sendMenu();
-        int index = getSelectedFileIndex();
-        sendSelectedFile(index);
+        try {
+            // Increment total requests before handling
+            myfileserver.incrementTotalRequests();
+
+            // Send the file menu
+            sendMenu();
+
+            // Ask client for file name
+            out.writeUTF("Enter the filename you want to download:");
+            String fileName = in.readUTF();
+
+            File file = new File(myfileserver.FILES_PATH + "/" + fileName);
+
+            // Check if file exists
+            if (file.exists() && file.isFile()) {
+                myfileserver.incrementSuccessfulRequests();
+
+                out.writeUTF("File found. Sending content...\n");
+
+                sendFileContent(file);
+            } else {
+                out.writeUTF("File not found on server.\n");
+            }
+
+            // Send <N, M> statistics
+            int total = myfileserver.getTotalRequests();
+            int success = myfileserver.getSuccessfulRequests();
+            out.writeUTF("Server stats <Total Requests: " + total + ", Successful: " + success + ">");
+
+            socket.close();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void sendSelectedFile(int index) throws IOException {
-        File[] fileList = new File(myfileserver.FILES_PATH).listFiles();
-        File selectedFile =fileList[index];
-        List<String> fileLines = Files.readAllLines(selectedFile.toPath());
-        String fileContnet = String.join("\n",fileLines);
-        out.writeUTF(fileContnet);
-    }
-
-    private int getSelectedFileIndex() throws IOException {
-        String input = in.readUTF();
-        return Integer.parseInt(input)-1;
+    private void sendFileContent(File file) throws IOException {
+        List<String> fileLines = Files.readAllLines(file.toPath());
+        String fileContent = String.join("\n", fileLines);
+        out.writeUTF(fileContent);
     }
 
     private void sendMenu() throws IOException {
-        String menu = "** Files **\n";
+        String menu = "** Files on Server **\n";
         File[] fileList = new File(myfileserver.FILES_PATH).listFiles();
-        out.writeUTF("fileList.length");
+
+        if (fileList == null || fileList.length == 0) {
+            out.writeUTF("No files available on the server.\n");
+            return;
+        }
+
         for (int i = 0; i < fileList.length; i++) {
-            menu += String.format("* %d -  %s\n", i + 1, fileList[i].getName());
+            menu += String.format("* %d - %s\n", i + 1, fileList[i].getName());
         }
+
         out.writeUTF(menu);
-        }
+    }
 }
 
