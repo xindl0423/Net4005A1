@@ -1,1 +1,2 @@
-myfileserver.java is the file that hosts the server and clientconnection.java is a subclass of the myfileserver which is spun off to handle the server-client connections.
+To run the server file use:
+            java myfileserver and this will run the server section of the file
