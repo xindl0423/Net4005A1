@@ -8,8 +8,8 @@ import java.util.concurrent.Executors;
 
 public class myfileserver {
     private ServerSocket serverSocket;
-    public static final String FILES_PATH = "./ServerFiles";
-    public static final int PORT = 1000;
+    public static final String FILES_PATH = ".idea/ServerFiles";
+    public static final int PORT = 2020;
     static int totalrequests = 0;
     static int successfulrequests = 0;
     final int MAX_THREADS = 10;
@@ -29,6 +29,7 @@ public class myfileserver {
     private void acceptconnections() throws IOException {
         while (true){
             Socket clientsocket = serverSocket.accept();
+            String clientIP = clientsocket.getInetAddress().getHostAddress();
             if(clientsocket.isConnected())
                 threadPool.submit(() ->{
                     clientconnection client = new clientconnection(clientsocket);
@@ -50,6 +51,12 @@ public class myfileserver {
 
     public static synchronized int getSuccessfulRequests() {
         return successfulrequests;
+    }
+
+    public static void logRequest(String clientIP, String filename, boolean success) {
+        String status = success ? "SUCCESS" : "FAILURE";
+        System.out.println("Request from " + clientIP + " for file '" + filename + "' → " + status);
+        System.out.println("Total Requests: " + getTotalRequests() + ", Successful: " + getSuccessfulRequests());
     }
 
     public static void main(String[] args) throws IOException {

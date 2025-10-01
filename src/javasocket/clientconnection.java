@@ -23,6 +23,10 @@ public class clientconnection {
     }
 
     public void sendFile() {
+        String fileName = "";
+        boolean success = false;
+        String clientIP = socket.getInetAddress().getHostAddress();
+
         try {
             // Increment total requests before handling
             myfileserver.incrementTotalRequests();
@@ -32,14 +36,14 @@ public class clientconnection {
 
             // Ask client for file name
             out.writeUTF("Enter the filename you want to download:");
-            String fileName = in.readUTF();
+            fileName = in.readUTF();
 
             File file = new File(myfileserver.FILES_PATH + "/" + fileName);
 
             // Check if file exists
             if (file.exists() && file.isFile()) {
                 myfileserver.incrementSuccessfulRequests();
-
+                success = true;
                 out.writeUTF("File found. Sending content...\n");
 
                 sendFileContent(file);
@@ -49,13 +53,16 @@ public class clientconnection {
 
             // Send <N, M> statistics
             int total = myfileserver.getTotalRequests();
-            int success = myfileserver.getSuccessfulRequests();
-            out.writeUTF("Server stats <Total Requests: " + total + ", Successful: " + success + ">");
+            int successful = myfileserver.getSuccessfulRequests();
+            out.writeUTF("Server stats <Total Requests: " + total + ", Successful: " + successful + ">");
 
             socket.close();
 
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            // Log the request regardless of success or failure
+            myfileserver.logRequest(clientIP, fileName, success);
         }
     }
 

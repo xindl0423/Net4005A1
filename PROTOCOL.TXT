@@ -1,1 +1,3 @@
-
+It uses java TCP sockets and the local ip address of the machine that it is running on.
+Once the port is specified, it uses java TCP ports to send the files.
+The messages are encoded using DataInputStream/DataOutputStream with UTF string.
