@@ -1,3 +1,13 @@
+# Assignment 1 4005
+
+**Description
+
+Java file server for NET4005
+
+**Getting Started
+
+***Executing program
+
 To run the server file use:
             -java myfileserver and this will run the server section of the file
             -sample format:
@@ -17,5 +27,5 @@ To run the client file use:
 	
 
 ## Contributors
-Darien Rameriez-Hennesy
+Darien Ramiez-Hennessey
 Xindong Lin
