@@ -26,7 +26,7 @@ public class myfileclient {
             in = new DataInputStream(socket.getInputStream());
             out = new DataOutputStream(socket.getOutputStream());
 
-            // Receive menu (but don't display it to match assignment requirements)
+            // Receive menu
             String menu = in.readUTF();
 
             // Receive prompt
