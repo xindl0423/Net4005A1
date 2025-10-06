@@ -9,7 +9,7 @@ public class clientconnection {
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
-    private static final int PORT = 1000;
+    private static final int PORT = 2020;
     private static final String STOP_STRING = "##";
 
     public clientconnection(Socket socket){
